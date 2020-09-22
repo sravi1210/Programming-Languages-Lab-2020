@@ -43,7 +43,7 @@ public class MatchingMachine {
 
 		// Create and run parallel threads. Each thread will run throughly on the same number of socks.
 		for(int k=0; k<num_sock && k<NUM_ROBOTS; k++){
-			Manager manager = new Manager(sock[k], store);
+			Manager manager = new Manager(sock[k], store, k+1);
 			Thread thread = new Thread(manager);
 			thread.start();
 		}

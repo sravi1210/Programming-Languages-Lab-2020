@@ -5,17 +5,33 @@ public class Manager implements Runnable {
 	
 	Sock[] sock;                      // List of socks from one robot hand.
 	Store store;                      // Store for the socks.
-
+	int robot;
 	// Constructor
-	public Manager(Sock[] sock, Store store) {
+	public Manager(Sock[] sock, Store store, int robot) {
 		this.sock = sock;
 		this.store = store;
+		this.robot = robot;
 	}
 
 	// Prints if a pair is matched in any color
 	public void PrintPair(Sock sock1, Sock sock2){
 		if(sock1 != null && sock2 != null && sock1.color.equals(sock2.color)){
-			System.out.println("Pair Formed :- " + "Color = " + sock1.color + " and sockId = (" + sock1.id + ", " + sock2.id + ")");
+			System.out.println("Matching Machine Formed Pair :- " + "Color = " + sock1.color + " and sockId = (" + sock1.id + ", " + sock2.id + ")");
+			String color = sock1.color;
+			int shelf = 1;
+			if(color.equals("Blue")){
+				shelf = 1;
+			}
+			else if(color.equals("Black")){
+				shelf = 2;
+			}
+			else if(color.equals("Grey")){
+				shelf = 3;
+			}
+			else{
+				shelf = 4;
+			}
+			System.out.println("Shelf Manager Robot Puts The Pair " + "(" + sock1.id + ", " + sock2.id + ")" + " Into Shelf " + shelf);
 			return;
 		}
 		return;
@@ -31,6 +47,8 @@ public class Manager implements Runnable {
 				break;
 			}
 			String color = sock[i].color;
+
+			System.out.println("Robot " + robot + " picked up Sock :- " + " Color = " + sock[i].color + " and Id = " + sock[i].id);
 
 			// If current sock is Blue.
 			if(color.equals("Blue")){
