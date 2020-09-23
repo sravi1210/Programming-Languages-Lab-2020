@@ -20,6 +20,7 @@ public class FileReadWrite {
 		this.student = new ArrayList<Student>();
 	}
 
+	// Function to read contents of the file after the lock permissions given.
 	public void fileReadWithoutLock(String loc){
 		try {
 			File file = new File(loc);                               // Open the file.
@@ -77,7 +78,7 @@ public class FileReadWrite {
 		return;
 	}
 
-
+	// Funtion to write contents into the file after lock permission given.
 	public void fileWriteWithoutLock(String loc){
 		ArrayList<Student> children = this.student;
 		if(loc.equals("./Sorted_Roll.txt")){                     // Sort the children arraylist on parameter 'roll' if Sorted_Roll.txt is to be written.
@@ -116,7 +117,7 @@ public class FileReadWrite {
 
 		while(lock == null){
 			try{
-				lock = fileChannel.tryLock();
+				lock = fileChannel.lock(0, Long.MAX_VALUE, true);
 				if(lock != null){
 					fileReadWithoutLock(loc);
 					lock.release();
@@ -133,7 +134,6 @@ public class FileReadWrite {
 
 	// Function to write contents of 'children' in file at location 'loc'.
 	public void fileWrite(Integer roll, Integer marks, String operate, String username){
-
 		File file1 = new File("./Stud_Info.txt");
 		File file2 = new File("./Sorted_Name.txt");
 		File file3 = new File("./Sorted_Roll.txt");
