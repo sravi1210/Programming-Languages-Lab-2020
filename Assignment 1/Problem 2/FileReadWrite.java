@@ -6,6 +6,11 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.ArrayList;
 
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
+
 public class FileReadWrite {
 
 	ArrayList<Student> student;   // Array to store the list of students from the file.
@@ -15,8 +20,7 @@ public class FileReadWrite {
 		this.student = new ArrayList<Student>();
 	}
 
-	// Function to read contents of the file at location 'loc'.
-	public void fileRead(String loc){
+	public void fileReadWithoutLock(String loc){
 		try {
 			File file = new File(loc);                               // Open the file.
 			Scanner input = new Scanner(file);
@@ -31,7 +35,7 @@ public class FileReadWrite {
 				Integer marks = 0;
 				String teacher = "";
 
-				if(token.hasMoreTokens()){
+				if(token.hasMoreTokens()){           // Parsing the content of a row for a object in Student class.
 					word = token.nextToken();
 					roll = Integer.parseInt(word);
 				}
@@ -73,25 +77,85 @@ public class FileReadWrite {
 		return;
 	}
 
+
+	// Function to read contents of the file at location 'loc'.
+	public void fileRead(String loc){
+		File file = new File(loc);
+		FileChannel fileChannel;
+		
+		try{
+			fileChannel = new RandomAccessFile(file, "r").getChannel();
+		}catch(FileNotFoundException e){
+			e.printStackTrace();
+			return;
+		}
+
+		FileLock lock = null;
+
+		while(lock == null){
+			try{
+				lock = fileChannel.tryLock();
+				if(lock != null){
+					fileReadWithoutLock(loc);
+					lock.release();
+					fileChannel.close();
+					return;
+				}
+			}catch(OverlappingFileLockException |IOException e){
+				e.printStackTrace();
+				return;
+			}
+		}
+		return;
+	}
+
 	// Function to write contents of 'children' in file at location 'loc'.
 	public void fileWrite(String loc){
-		ArrayList<Student> children = this.student;
-		if(loc.equals("./Sorted_Roll.txt")){
-			children.sort((stud1, stud2) -> stud1.roll.compareTo(stud2.roll));
-		}
-		else if(loc.equals("./Sorted_Name.txt")){	
-			children.sort((stud1, stud2) -> stud1.name.compareTo(stud2.name));
-		}
-		try {
-			FileWriter writer = new FileWriter(loc);
-			for(int i=0;i<children.size();i++){
-				Student child = children.get(i);
-				writer.write(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher + "\n");
-			}
-			writer.close();
-		}catch (IOException e){
-			System.out.println("Cannot Write Into File");
+
+		File file = new File(loc);
+		FileChannel fileChannel;
+
+		try{
+			fileChannel = new RandomAccessFile(file, "rw").getChannel();
+		}catch(FileNotFoundException e){
 			e.printStackTrace();
+			return;
+		}
+
+		FileLock lock = null;
+
+		while(lock == null){
+			try{
+				lock = fileChannel.tryLock();
+				if(lock != null){
+					ArrayList<Student> children = this.student;
+					if(loc.equals("./Sorted_Roll.txt")){                     // Sort the children arraylist on parameter 'roll' if Sorted_Roll.txt is to be written.
+						children.sort((stud1, stud2) -> stud1.roll.compareTo(stud2.roll));
+					}
+					else if(loc.equals("./Sorted_Name.txt")){	             // Sort the children arraylist on parameter 'name' if Sorted_Name.txt is to be written.
+						children.sort((stud1, stud2) -> stud1.name.compareTo(stud2.name));
+					}
+					try {
+						FileWriter writer = new FileWriter(loc);
+						for(int i=0;i<children.size();i++){
+							Student child = children.get(i);
+							writer.write(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher + "\n");
+						}
+						writer.close();
+					}catch (IOException e){
+						System.out.println("Cannot Write Into File");
+						e.printStackTrace();
+						return;
+					}
+
+					lock.release();
+					fileChannel.close();
+					return;
+				}
+			}catch(IOException e){
+				e.printStackTrace();
+				return;
+			}			
 		}
 		return;
 	}

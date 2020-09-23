@@ -41,41 +41,42 @@ public class Evaluation {
 
 			while(loggedIn){
 				boolean allCheck = true;
-				System.out.println("Type Your Requirement (Read , Update OR Logout) :");
-				require = input.nextLine();
-				require = require.toUpperCase();
-				if(require.equals("LOGOUT")){
-					username = require;
-				}
-				else if(require.equals("READ")){
-					System.out.println("Enter Filename (Stud_Info OR Sorted_Roll OR Sorted_Name) :");
-					fileName = input.nextLine();
-					if(!fileName.equals("Stud_Info") && !fileName.equals("Sorted_Name") && !fileName.equals("Sorted_Roll")){
-						System.out.println("Enter Correct FileName. Try Again!");
-						allCheck = false;
+				if(!username.equals("LOGOUT")){
+					System.out.println("Type Your Requirement (Read , Update OR Logout) :");
+					require = input.nextLine();
+					require = require.toUpperCase();
+					if(require.equals("LOGOUT")){
+						username = require;
 					}
-				}
-				else if(require.equals("UPDATE")){
-					System.out.println("Enter Roll Number :");
-					roll = Integer.parseInt(input.nextLine());
-					System.out.println("Enter Add/Sub To Add Or Subtract Marks :");
-					operate = input.nextLine();
-					operate = operate.toUpperCase();
-					if(!operate.equals("ADD") && !operate.equals("SUB")){
-						System.out.println("Enter Correct Operation. Try Again!");
-						allCheck = false;
+					else if(require.equals("READ")){
+						System.out.println("Enter Filename (Stud_Info OR Sorted_Roll OR Sorted_Name) :");
+						fileName = input.nextLine();
+						if(!fileName.equals("Stud_Info") && !fileName.equals("Sorted_Name") && !fileName.equals("Sorted_Roll")){
+							System.out.println("Enter Correct FileName. Try Again!");
+							allCheck = false;
+						}
+					}
+					else if(require.equals("UPDATE")){
+						System.out.println("Enter Roll Number :");
+						roll = Integer.parseInt(input.nextLine());
+						System.out.println("Enter Add/Sub To Add Or Subtract Marks :");
+						operate = input.nextLine();
+						operate = operate.toUpperCase();
+						if(!operate.equals("ADD") && !operate.equals("SUB")){
+							System.out.println("Enter Correct Operation. Try Again!");
+							allCheck = false;
+						}
+						else{
+							System.out.println("Enter Marks To Add/Sub :");
+							marks = Integer.parseInt(input.nextLine());
+						}
 					}
 					else{
-						System.out.println("Enter Marks To Add/Sub :");
-						marks = Integer.parseInt(input.nextLine());
+						System.out.println("Enter Correct Requirement. Try Again!");
+						allCheck = false;
 					}
+					System.out.println("--------------------------------------------------------------");
 				}
-				else{
-					System.out.println("Enter Correct Requirement. Try Again!");
-					allCheck = false;
-				}
-				System.out.println("--------------------------------------------------------------");
-				
 				if(allCheck){
 					if(username.equals("CC") || username.equals("TA1") || username.equals("TA2")) {
 						if(require.equals("READ")){
@@ -88,7 +89,7 @@ public class Evaluation {
 							fileName = "Stud_Info";
 							FileReadWrite file = new FileReadWrite();
 							String loc = "./" +  fileName + ".txt";
-							file.fileRead(loc);
+							file.fileReadWithoutLock(loc);
 							boolean success = file.fileUpdate(roll, marks, operate, username);
 							if(success){
 								file.fileWrite("./Sorted_Roll.txt");
