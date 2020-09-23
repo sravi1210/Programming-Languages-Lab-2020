@@ -117,7 +117,7 @@ public class FileReadWrite {
 
 		while(lock == null){
 			try{
-				lock = fileChannel.lock(0, Long.MAX_VALUE, true);
+				lock = fileChannel.tryLock(0, Long.MAX_VALUE, true);
 				if(lock != null){
 					fileReadWithoutLock(loc);
 					lock.release();
@@ -222,12 +222,11 @@ public class FileReadWrite {
 
 	// Function to print student records.
 	public void printRecord(){
-		System.out.println("-------------------------------------------------------------------------");
 		for(int i=0;i<this.student.size();i++){
 			Student child = this.student.get(i);
 			System.out.println(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher);
 		}
-		System.out.println("-------------------------------------------------------------------------");
+		System.out.println("------------------------------------------------------------------");
 	}
 
 }

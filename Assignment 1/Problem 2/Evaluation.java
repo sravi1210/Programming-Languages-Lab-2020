@@ -21,7 +21,7 @@ public class Evaluation {
 				username = username.toUpperCase();
 				if(username.equals("CC") || username.equals("TA1") || username.equals("TA2")){
 					System.out.println("Logged In With Username " + username);
-					System.out.println("-----------------------------------");
+					System.out.println("------------------------------------------------------------------");
 					loggedIn = true;
 				}
 				else if(username.equals("LOGOUT")) {
@@ -29,7 +29,7 @@ public class Evaluation {
 				}
 				else{
 					System.out.println("Login Failed. Try Again!");
-					System.out.println("------------------------------"); 
+					System.out.println("------------------------------------------------------------------"); 
 				}
 			}
 
@@ -75,7 +75,7 @@ public class Evaluation {
 						System.out.println("Enter Correct Requirement. Try Again!");
 						allCheck = false;
 					}
-					System.out.println("--------------------------------------------------------------");
+					System.out.println("------------------------------------------------------------------");
 				}
 				if(allCheck){
 					if(username.equals("CC") || username.equals("TA1") || username.equals("TA2")) {
@@ -94,7 +94,7 @@ public class Evaluation {
 					}
 					else if(username.equals("LOGOUT")){
 						System.out.println("Signed Out");
-						System.out.println("----------");
+						System.out.println("------------------------------------------------------------------");
 						loggedIn = false;
 						loop = false;
 					}
