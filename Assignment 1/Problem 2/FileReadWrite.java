@@ -76,6 +76,12 @@ public class FileReadWrite {
 	// Function to write contents of 'children' in file at location 'loc'.
 	public void fileWrite(String loc){
 		ArrayList<Student> children = this.student;
+		if(loc.equals("./Sorted_Roll.txt")){
+			children.sort((stud1, stud2) -> stud1.roll.compareTo(stud2.roll));
+		}
+		else if(loc.equals("./Sorted_Name.txt")){	
+			children.sort((stud1, stud2) -> stud1.name.compareTo(stud2.name));
+		}
 		try {
 			FileWriter writer = new FileWriter(loc);
 			for(int i=0;i<children.size();i++){
@@ -90,7 +96,7 @@ public class FileReadWrite {
 		return;
 	}
 
-	// Funtion to update the file contents with different users.
+	// Function to update the file contents with different users.
 	public boolean fileUpdate(Integer roll, Integer marks, String operate, String username) {
 		for(int i=0;i<this.student.size();i++){
 			Student child = this.student.get(i);
