@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class MatchingMachine {
 	public static void main(String[] args) {
 		// Number of threads which will run the input simultaneously.
-		int NUM_ROBOTS = 2;
+		int NUM_ROBOTS = 4;
 
 		// Input scanner object for the command line input
 		Scanner input = new Scanner(System.in);
