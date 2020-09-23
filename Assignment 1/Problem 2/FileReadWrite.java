@@ -16,7 +16,7 @@ public class FileReadWrite {
 	}
 
 	// Function to read contents of the file at location 'loc'.
-	public ArrayList<Student> fileRead(String loc){
+	public void fileRead(String loc){
 		try {
 			File file = new File(loc);                               // Open the file.
 			Scanner input = new Scanner(file);
@@ -70,12 +70,12 @@ public class FileReadWrite {
 			System.out.println("File Not Found");
 			e.printStackTrace();
 		}
-
-		return this.student;
+		return;
 	}
 
 	// Function to write contents of 'children' in file at location 'loc'.
-	public void fileWrite(ArrayList<Student> children, String loc){
+	public void fileWrite(String loc){
+		ArrayList<Student> children = this.student;
 		try {
 			FileWriter writer = new FileWriter(loc);
 			for(int i=0;i<children.size();i++){
@@ -88,6 +88,46 @@ public class FileReadWrite {
 			e.printStackTrace();
 		}
 		return;
+	}
+
+	// Funtion to update the file contents with different users.
+	public boolean fileUpdate(Integer roll, Integer marks, String operate, String username) {
+		for(int i=0;i<this.student.size();i++){
+			Student child = this.student.get(i);
+			if(child.roll.intValue() == roll.intValue()){
+				if((username.equals("TA1") || username.equals("TA2")) && (child.teacher.equals("CC"))){
+					System.out.println("Cannot Update Marks. Update By CC. Try Again!");
+					return false;
+				} 
+				else{
+					Integer newMarks = child.marks;
+					if(operate.equals("ADD")){
+						newMarks += marks;
+					}
+					else{
+						newMarks -= marks;
+					}
+					this.student.get(i).marks = newMarks;
+					this.student.get(i).teacher = username;
+					child = this.student.get(i);
+					System.out.println("Updated Row: " + child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher);
+					return true;
+				}
+			}
+		}
+		System.out.println("Roll Number Does Not Exist. Try Again!");
+		return false;
+	}
+
+
+	// Function to print student records.
+	public void printRecord(){
+		System.out.println("-------------------------------------------------------------------------");
+		for(int i=0;i<this.student.size();i++){
+			Student child = this.student.get(i);
+			System.out.println(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher);
+		}
+		System.out.println("-------------------------------------------------------------------------");
 	}
 
 }
