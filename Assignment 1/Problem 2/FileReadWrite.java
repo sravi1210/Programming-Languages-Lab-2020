@@ -78,11 +78,33 @@ public class FileReadWrite {
 	}
 
 
+	public void fileWriteWithoutLock(String loc){
+		ArrayList<Student> children = this.student;
+		if(loc.equals("./Sorted_Roll.txt")){                     // Sort the children arraylist on parameter 'roll' if Sorted_Roll.txt is to be written.
+			children.sort((stud1, stud2) -> stud1.roll.compareTo(stud2.roll));
+		}
+		else if(loc.equals("./Sorted_Name.txt")){	             // Sort the children arraylist on parameter 'name' if Sorted_Name.txt is to be written.
+			children.sort((stud1, stud2) -> stud1.name.compareTo(stud2.name));
+		}
+		try {
+			FileWriter writer = new FileWriter(loc);
+			for(int i=0;i<children.size();i++){
+				Student child = children.get(i);
+				writer.write(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher + "\n");
+			}
+			writer.close();
+		}catch (IOException e){
+			System.out.println("Cannot Write Into File");
+			e.printStackTrace();
+			return;
+		}
+		return;
+	}
+
 	// Function to read contents of the file at location 'loc'.
 	public void fileRead(String loc){
 		File file = new File(loc);
 		FileChannel fileChannel;
-		
 		try{
 			fileChannel = new RandomAccessFile(file, "r").getChannel();
 		}catch(FileNotFoundException e){
@@ -110,46 +132,54 @@ public class FileReadWrite {
 	}
 
 	// Function to write contents of 'children' in file at location 'loc'.
-	public void fileWrite(String loc){
+	public void fileWrite(Integer roll, Integer marks, String operate, String username){
 
-		File file = new File(loc);
-		FileChannel fileChannel;
+		File file1 = new File("./Stud_Info.txt");
+		File file2 = new File("./Sorted_Name.txt");
+		File file3 = new File("./Sorted_Roll.txt");
+		FileChannel fileChannel1;
+		FileChannel fileChannel2;
+		FileChannel fileChannel3;
 
 		try{
-			fileChannel = new RandomAccessFile(file, "rw").getChannel();
+			fileChannel1 = new RandomAccessFile(file1, "rw").getChannel();
+			fileChannel2 = new RandomAccessFile(file2, "rw").getChannel();
+			fileChannel3 = new RandomAccessFile(file3, "rw").getChannel();
 		}catch(FileNotFoundException e){
 			e.printStackTrace();
 			return;
 		}
 
-		FileLock lock = null;
+		FileLock lock1 = null;
+		FileLock lock2 = null;
+		FileLock lock3 = null;
 
-		while(lock == null){
+		while(lock1 == null && lock2 == null && lock3 == null){
 			try{
-				lock = fileChannel.tryLock();
-				if(lock != null){
-					ArrayList<Student> children = this.student;
-					if(loc.equals("./Sorted_Roll.txt")){                     // Sort the children arraylist on parameter 'roll' if Sorted_Roll.txt is to be written.
-						children.sort((stud1, stud2) -> stud1.roll.compareTo(stud2.roll));
-					}
-					else if(loc.equals("./Sorted_Name.txt")){	             // Sort the children arraylist on parameter 'name' if Sorted_Name.txt is to be written.
-						children.sort((stud1, stud2) -> stud1.name.compareTo(stud2.name));
-					}
-					try {
-						FileWriter writer = new FileWriter(loc);
-						for(int i=0;i<children.size();i++){
-							Student child = children.get(i);
-							writer.write(child.roll + " " + child.name + " " + child.mailId + " " + child.marks + " " + child.teacher + "\n");
-						}
-						writer.close();
-					}catch (IOException e){
-						System.out.println("Cannot Write Into File");
-						e.printStackTrace();
-						return;
+				if(lock1 == null){
+					lock1 = fileChannel1.tryLock();
+				}
+				if(lock2 == null){
+					lock2 = fileChannel2.tryLock();
+				}
+				if(lock3 == null){
+					lock3 = fileChannel3.tryLock();
+				}
+				if(lock1 != null && lock2 != null && lock3 != null){
+					fileReadWithoutLock("./Stud_Info.txt");
+					boolean success = fileUpdate(roll, marks, operate, username);
+					if(success){
+						fileWriteWithoutLock("./Stud_Info.txt");
+						fileWriteWithoutLock("./Sorted_Name.txt");
+						fileWriteWithoutLock("./Sorted_Roll.txt");
 					}
 
-					lock.release();
-					fileChannel.close();
+					lock1.release();
+					lock2.release();
+					lock3.release();
+					fileChannel1.close();
+					fileChannel2.close();
+					fileChannel3.close();
 					return;
 				}
 			}catch(IOException e){

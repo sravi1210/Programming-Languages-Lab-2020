@@ -89,13 +89,7 @@ public class Evaluation {
 							fileName = "Stud_Info";
 							FileReadWrite file = new FileReadWrite();
 							String loc = "./" +  fileName + ".txt";
-							file.fileReadWithoutLock(loc);
-							boolean success = file.fileUpdate(roll, marks, operate, username);
-							if(success){
-								file.fileWrite("./Sorted_Roll.txt");
-								file.fileWrite("./Sorted_Name.txt");
-								file.fileWrite("./Stud_Info.txt");
-							}
+							file.fileWrite(roll, marks, operate, username);
 						}
 					}
 					else if(username.equals("LOGOUT")){
