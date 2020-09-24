@@ -155,7 +155,7 @@ public class FileReadWrite {
 		FileLock lock2 = null;
 		FileLock lock3 = null;
 
-		while(lock1 == null && lock2 == null && lock3 == null){
+		while(lock1 == null || lock2 == null || lock3 == null){
 			try{
 				if(lock1 == null){
 					lock1 = fileChannel1.tryLock();
