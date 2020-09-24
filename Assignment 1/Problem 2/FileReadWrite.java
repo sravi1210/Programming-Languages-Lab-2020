@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 
+// Class to handle file read write and corresponding locks with files.
 public class FileReadWrite {
 
 	ArrayList<Student> student;   // Array to store the list of students from the file.

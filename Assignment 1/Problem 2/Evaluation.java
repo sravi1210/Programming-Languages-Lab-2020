@@ -58,17 +58,27 @@ public class Evaluation {
 					}
 					else if(require.equals("UPDATE")){
 						System.out.println("Enter Roll Number :");
-						roll = Integer.parseInt(input.nextLine());
-						System.out.println("Enter Add/Sub To Add Or Subtract Marks :");
-						operate = input.nextLine();
-						operate = operate.toUpperCase();
-						if(!operate.equals("ADD") && !operate.equals("SUB")){
-							System.out.println("Enter Correct Operation. Try Again!");
+						try{
+							roll = Integer.parseInt(input.nextLine());
+							System.out.println("Enter Add/Sub To Add Or Subtract Marks :");
+							operate = input.nextLine();
+							operate = operate.toUpperCase();
+							if(!operate.equals("ADD") && !operate.equals("SUB")){
+								System.out.println("Enter Correct Operation. Try Again!");
+								allCheck = false;
+							}
+							else{
+								System.out.println("Enter Marks To Add/Sub :");
+								try{
+									marks = Integer.parseInt(input.nextLine());
+								}catch(NumberFormatException e){
+									System.out.println("Marks Is A Integer. Try Again!");
+									allCheck = false;
+								}
+							}
+						}catch(NumberFormatException e){
+							System.out.println("Roll Number Is A Integer. Try Again!");
 							allCheck = false;
-						}
-						else{
-							System.out.println("Enter Marks To Add/Sub :");
-							marks = Integer.parseInt(input.nextLine());
 						}
 					}
 					else{
