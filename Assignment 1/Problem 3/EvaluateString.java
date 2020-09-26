@@ -1,5 +1,6 @@
 import java.util.Stack; 
 
+// EvaluateString class to calculate the value of the given mathematical expression.
 public class EvaluateString {
 
 	public static Integer int_min = -2147483648;

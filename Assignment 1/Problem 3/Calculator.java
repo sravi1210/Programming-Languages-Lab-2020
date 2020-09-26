@@ -15,7 +15,7 @@ public class Calculator {
 	    frame = new JFrame("Calculator Is Ready To Compute");
 
 	    screen = new JLabel();    // Result output screen. 
-	    screen.setText("");
+	    screen.setText("0");
 	    screen.setBounds(90, 100, 300, 40);
 	    frame.add(screen);
 	    
