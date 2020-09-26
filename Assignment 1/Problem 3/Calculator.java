@@ -4,10 +4,10 @@ import java.awt.Color;
 
 public class Calculator {
 	private final static int ONE_SECOND = 1500;
-	JFrame frame;
-	JButton button[] = new JButton[15];   // Set of buttons for each number and operations. 
-	JLabel screen;
-	Integer highlighted_Button = 0;
+	JFrame frame;             // Frame of the calculator.
+	JButton button[] = new JButton[16];   // Set of buttons for each number and operations. 
+	JLabel screen;     // Screen to display the result and inputs.
+	Integer highlighted_Button = 0;   // Highlighted button ID.
 
 	// Constructor
 	public Calculator(){
@@ -15,7 +15,7 @@ public class Calculator {
 	    frame = new JFrame("Calculator Is Ready To Compute");
 
 	    screen = new JLabel();    // Result output screen. 
-	    screen.setText("Enter Some Numbers...");
+	    screen.setText("");
 	    screen.setBounds(90, 100, 300, 40);
 	    frame.add(screen);
 	    
@@ -40,14 +40,19 @@ public class Calculator {
 	    button[0].setBackground(Color.WHITE);
 	    frame.add(button[0]);
 
-	    button[14] = new JButton("Press Enter To Calculate");  // Result calculation button.
-	    button[14].setBounds(80, 310, 260, 50);
+	    button[14] = new JButton("Calculate");  // Result calculation button.
+	    button[14].setBounds(80, 310, 150, 50);
 	    button[14].setBackground(Color.WHITE);
 	    frame.add(button[14]);
 
-	    frame.setSize(500, 500);
+	    button[15] = new JButton("Clear");
+	    button[15].setBounds(240, 310, 100, 50);
+	    button[15].setBackground(Color.WHITE);
+	    frame.add(button[15]);
+
+	    frame.setSize(500, 500);   // Basic setting of the frame to be displayed.
 	    frame.setLayout(null);
 	    frame.setVisible(true);
-	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  // Close button added default.
 	}
 }
