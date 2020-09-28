@@ -14,9 +14,9 @@ public class Calculator {
 		// Designing the calculator GUI.
 	    frame = new JFrame("Calculator Is Ready To Compute");
 
-	    screen = new JLabel();    // Result output screen. 
+	    screen = new JLabel("0",SwingConstants.RIGHT);    // Result output screen. 
 	    screen.setText("0");
-	    screen.setBounds(90, 100, 300, 40);
+	    screen.setBounds(80, 100, 260, 40);
 	    frame.add(screen);
 	    
 	    for(Integer i=1;i<10;i++){
