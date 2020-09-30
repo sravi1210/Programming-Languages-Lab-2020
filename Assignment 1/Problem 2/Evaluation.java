@@ -13,6 +13,7 @@ public class Evaluation {
 
 		boolean loggedIn = false;   // Boolean tp check for login.
 
+		// Loop to provide all the input requirements and condition to read/update files by the TA's or CC.
 		while(loop){
 			while(!loggedIn) {
 				System.out.println("To Login Use Username (CC, TA1 or TA2) And For Exit Use (Logout) :");

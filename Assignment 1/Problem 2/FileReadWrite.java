@@ -108,7 +108,7 @@ public class FileReadWrite {
 		File file = new File(loc);
 		FileChannel fileChannel;
 		try{
-			fileChannel = new RandomAccessFile(file, "r").getChannel();
+			fileChannel = new RandomAccessFile(file, "r").getChannel();   // Open the channel with file in read mode.
 		}catch(FileNotFoundException e){
 			e.printStackTrace();
 			return;
@@ -116,16 +116,16 @@ public class FileReadWrite {
 
 		FileLock lock = null;
 
-		while(lock == null){
+		while(lock == null){              // Try acquiring the read-lock to read the contents. 
 			try{
 				lock = fileChannel.tryLock(0, Long.MAX_VALUE, true);
 				if(lock != null){
-					fileReadWithoutLock(loc);
+					fileReadWithoutLock(loc);       // After lock acquired, simply read the contents of the file.
 					lock.release();
 					fileChannel.close();
 					return;
 				}
-			}catch(OverlappingFileLockException |IOException e){
+			}catch(OverlappingFileLockException |IOException e){     // Catch exception of input/output OR overlapping locks.
 				e.printStackTrace();
 				return;
 			}
@@ -143,7 +143,7 @@ public class FileReadWrite {
 		FileChannel fileChannel3;
 
 		try{
-			fileChannel1 = new RandomAccessFile(file1, "rw").getChannel();
+			fileChannel1 = new RandomAccessFile(file1, "rw").getChannel();           // Open three channels for every file in read/write mode.
 			fileChannel2 = new RandomAccessFile(file2, "rw").getChannel();
 			fileChannel3 = new RandomAccessFile(file3, "rw").getChannel();
 		}catch(FileNotFoundException e){
@@ -155,7 +155,7 @@ public class FileReadWrite {
 		FileLock lock2 = null;
 		FileLock lock3 = null;
 
-		while(lock1 == null || lock2 == null || lock3 == null){
+		while(lock1 == null || lock2 == null || lock3 == null){        // Try and acquire lock on each file before updating any of them.
 			try{
 				if(lock1 == null){
 					lock1 = fileChannel1.tryLock();
@@ -166,7 +166,7 @@ public class FileReadWrite {
 				if(lock3 == null){
 					lock3 = fileChannel3.tryLock();
 				}
-				if(lock1 != null && lock2 != null && lock3 != null){
+				if(lock1 != null && lock2 != null && lock3 != null){         // When write lock on all the three files have been acquired, update the contents.
 					fileReadWithoutLock("./Stud_Info.txt");
 					boolean success = fileUpdate(roll, marks, operate, username);
 					if(success){
@@ -175,15 +175,15 @@ public class FileReadWrite {
 						fileWriteWithoutLock("./Sorted_Roll.txt");
 					}
 
-					lock1.release();
+					lock1.release();          // Release the lock after the update is complete.
 					lock2.release();
 					lock3.release();
-					fileChannel1.close();
+					fileChannel1.close();       // Close the file channels.
 					fileChannel2.close();
 					fileChannel3.close();
 					return;
 				}
-			}catch(IOException e){
+			}catch(IOException e){        // Catch IOException for input/output.
 				e.printStackTrace();
 				return;
 			}			
@@ -201,7 +201,7 @@ public class FileReadWrite {
 					return false;
 				} 
 				else{
-					Integer newMarks = child.marks;
+					Integer newMarks = child.marks;           // Update the marks and teacher for the record getting updated.
 					if(operate.equals("ADD")){
 						newMarks += marks;
 					}
