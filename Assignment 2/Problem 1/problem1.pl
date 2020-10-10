@@ -22,9 +22,7 @@ uncle(X, Y) :-
 		parent(P, Z)
 	).
 
-
-% Half Sister :- Is defined as the sister with whom only one parent is common.
-% halfsister(X, Y) :- means X is the halfsister of Y.
+% Function to find the common parent between X and Y, if it is P or not.
 
 oneParentCommon(P, X, Y) :-
 	(
@@ -32,11 +30,16 @@ oneParentCommon(P, X, Y) :-
 		parent(P, Y)
 	).
 
+% Function to find the other parent between X and Y, ie O.
+
 otherParent(P, O, X) :-
 	(
 		parent(O, X),
 		not(P=O)
 	).
+
+% Half Sister :- Is defined as the sister with whom only one parent is common.
+% halfsister(X, Y) :- means X is the halfsister of Y.
 
 halfsister(X, Y) :-
 	(
