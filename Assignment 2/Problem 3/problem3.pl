@@ -47,42 +47,6 @@ start(g2).
 start(g3).
 start(g4).
 
-
-% If Depth First Search reaches exit gate
-dfs(g17, Path, _) :- 
-    % Add last gate to current path.
-    append(Path, [g17], UpdatedPath), 
-    % Convert path list to concatenated string
-    atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
-    % Write string to terminal and file output.txt
-    format('~w~n', String),
-    open('output.txt', append, Stream),
-    write(Stream, String),
-    nl(Stream),
-    close(Stream).
-
-
-dfs(Gate, Path, TotalDistance) :-
-    (
-        % If gate has not been visited yet.
-        % Note that if gate had been already visited, exploring it would create a cycle and infinite paths would be possible.
-        not(member(Gate, Path)) -> 
-            % Add gate to current path
-            append(Path, [Gate], UpdatedPath),
-            % For all possible neighbours of the gate, apply Depth First Search recursively
-            forall(
-                edge(Gate, NextGate, Distance); edge(NextGate, Gate, Distance), 
-                (
-                    % Update total distance at each step
-                    UpdatedDistance is TotalDistance + Distance, 
-                    dfs(NextGate, UpdatedPath, UpdatedDistance)
-                )
-            )
-        ;
-            write("")
-    ).
-
-
 % If Depth First Search reaches exit gate
 optimal_dfs(g17, Path, TotalDistance) :- 
     % Add gate to current path
@@ -120,6 +84,39 @@ optimal_dfs(Gate, Path, TotalDistance) :-
             write("")
     ).
 
+% If Depth First Search reaches exit gate
+dfs(g17, Path, _) :- 
+    % Add last gate to current path.
+    append(Path, [g17], UpdatedPath), 
+    % Convert path list to concatenated string
+    atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
+    % Write string to terminal and file output.txt
+    format('~w~n', String),
+    open('output.txt', append, Stream),
+    write(Stream, String),
+    nl(Stream),
+    close(Stream).
+
+
+dfs(Gate, Path, TotalDistance) :-
+    (
+        % If gate has not been visited yet.
+        % Note that if gate had been already visited, exploring it would create a cycle and infinite paths would be possible.
+        not(member(Gate, Path)) -> 
+            % Add gate to current path
+            append(Path, [Gate], UpdatedPath),
+            % For all possible neighbours of the gate, apply Depth First Search recursively
+            forall(
+                edge(Gate, NextGate, Distance); edge(NextGate, Gate, Distance), 
+                (
+                    % Update total distance at each step
+                    UpdatedDistance is TotalDistance + Distance, 
+                    dfs(NextGate, UpdatedPath, UpdatedDistance)
+                )
+            )
+        ;
+            write("")
+    ).
 
 % Prints all possible paths using which the prisoner can escape
 paths() :-

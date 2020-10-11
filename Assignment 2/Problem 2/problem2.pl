@@ -18,6 +18,7 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 			append(Path, [X], UpdatedPath),
 			(
 				(X == Y) ->
+					% If the destination is same as source node, then a path is reached thus store the results.
 					nb_getval(optimalTime, OptimalTime),
     				UpdatedOptimalTime is min(OptimalTime, TotalTime),
 				    nb_setval(optimalTime, UpdatedOptimalTime),
@@ -35,6 +36,7 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 					write("")
 			),
 			forall(
+				% Iterate through all possible paths and update thhe values in each one of them. 
 				bus(ID, X, DP, ST, ET, Distance, Cost),
 				(	
 					UpdatedCost is TotalCost + Cost,
@@ -60,6 +62,7 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 			append(Path, [X], UpdatedPath),
 			(
 				(X == Y) ->
+					% If the destination is same as source node, then a path is reached thus store the results.
 					nb_getval(optimalCost, OptimalCost),
     				UpdatedOptimalCost is min(OptimalCost, TotalCost),
 				    nb_setval(optimalCost, UpdatedOptimalCost),
@@ -77,6 +80,7 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 					write("")
 			),
 			forall(
+				% Iterate through all possible paths and update thhe values in each one of them.
 				bus(ID, X, DP, ST, ET, Distance, Cost),
 				(	
 					UpdatedCost is TotalCost + Cost,
@@ -91,10 +95,6 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 			write("")
 	).
 
-
-
-
-
 % Depth First Search function for finding the path with the minimum distance.
 
 dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
@@ -105,6 +105,7 @@ dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 			append(Path, [X], UpdatedPath),
 			(
 				(X == Y) ->
+					% If the destination is same as source node, then a path is reached thus store the results.
 					nb_getval(optimalDistance, OptimalDistance),
     				UpdatedOptimalDistance is min(OptimalDistance, TotalDistance),
 				    nb_setval(optimalDistance, UpdatedOptimalDistance),
@@ -121,6 +122,7 @@ dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				;
 					write("")
 			),
+			% Iterate through all possible paths and update thhe values in each one of them.
 			forall(
 				bus(ID, X, DP, ST, ET, Distance, Cost),
 				(	
@@ -136,12 +138,15 @@ dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 			write("")
 	).
 
+
+% Function to print list of places and bus Id taken, for base case.
 printData([Place], []) :-
 	(
 		write(Place),
 		writeln("")
 	).
 
+% Function to print list of places and bus Id taken.
 printData([Place | NextPlace], [Bus | NextBus]) :-
 	(
 		write(Place),write("("), write(Bus), write(") "),
@@ -152,6 +157,7 @@ printData([Place | NextPlace], [Bus | NextBus]) :-
 
 route(X, Y) :-
 	(
+		% All Global variables used in the code.
 		writeln("---------------------------------------------------"),
 		nb_setval(optimalDistance, 1000000),
     	nb_setval(optimalCost, 1000000),
@@ -159,9 +165,8 @@ route(X, Y) :-
     	nb_setval(optimalPath, []),
     	nb_setval(optimalBus, []),
 
-		% To check if atleast a path exists between X and Y by simple Depth First Search.
-
-		dfs_OptimalDistance(X, [], [], Y, 0, 0, 0),
+		% To calculate minimum distance between X and Y by simple Depth First Search.
+		dfs_OptimalDistance(X, [], [], Y, 0, 0, 0), 
 
 		nb_getval(optimalDistance, OptimalDistance1),
 		nb_getval(optimalPath, OptimalPath1),
@@ -183,6 +188,7 @@ route(X, Y) :-
 	    nb_setval(optimalCost, 1000000),
 	    nb_setval(optimalDistance, 1000000),
 
+	    % To calculate minimum cost between X and Y by simple Depth First Search.
 	    dfs_OptimalCost(X, [], [], Y, 0, 0, 0),
 
 	    nb_getval(optimalCost, OptimalCost2),
@@ -205,6 +211,7 @@ route(X, Y) :-
 	    nb_setval(optimalCost, 1000000),
 	    nb_setval(optimalDistance, 1000000),
 
+	    % To calculate minimum travel time between X and Y by simple Depth First Search.
 	    dfs_OptimalTime(X, [], [], Y, 0, 0, 0),
 
 	    nb_getval(optimalCost, OptimalCost3),
@@ -220,5 +227,4 @@ route(X, Y) :-
 	    write("Distance Travelled : "), write(OptimalDistance3), writeln(" km"),
 	    write("Cost : "), write("Rs "), writeln(OptimalCost3),
 	    writeln("---------------------------------------------------")
-
 	).
