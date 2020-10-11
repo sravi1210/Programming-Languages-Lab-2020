@@ -5,6 +5,7 @@
 
 bus(123,amingaon,jalukbari,14.5,15,10,10).
 bus(13,jalukbari,paltanbazar,16,18,10,10).
+bus(10,amingaon,paltanbazar,15,15.5,30,100).
 bus(756,panbazar,chandmari,16,16.5,7,8).
 
 % Depth First Search function for finding the path with the minimum travel time.
@@ -37,8 +38,8 @@ dfs_OptimalTime(X, Path, Y, TotalDistance, TotalCost, TotalTime) :-
 				(	
 					UpdatedCost is TotalCost + Cost,
 					UpdatedDistance is TotalDistance + Distance,
-					Diff is ET - ST,
-					UpdatedTime is TotalTime + Diff,
+					Time is ET - ST,
+					UpdatedTime is TotalTime + Time,
 					dfs_OptimalTime(DP, UpdatedPath, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
 				)
 			)
@@ -49,7 +50,7 @@ dfs_OptimalTime(X, Path, Y, TotalDistance, TotalCost, TotalTime) :-
 
 % Depth First Search function for finding the path with the minimum cost.
 
-dfs_OptimalCost(X, Path, Y, TotalDistance, TotalCost, Time) :-
+dfs_OptimalCost(X, Path, Y, TotalDistance, TotalCost, TotalTime) :-
 	(	
 		% If the current node is not visited in path considered.
 		not(member(X, Path)) ->
@@ -65,7 +66,7 @@ dfs_OptimalCost(X, Path, Y, TotalDistance, TotalCost, Time) :-
 				        (UpdatedOptimalCost =:= TotalCost) -> 
 				        	nb_setval(optimalPath, UpdatedPath),
 				        	nb_setval(optimalDistance, TotalDistance),
-				        	nb_setval(optimalTime, Time) 
+				        	nb_setval(optimalTime, TotalTime) 
 				        ; 
 				        write("")
 				    )
@@ -77,8 +78,8 @@ dfs_OptimalCost(X, Path, Y, TotalDistance, TotalCost, Time) :-
 				(	
 					UpdatedCost is TotalCost + Cost,
 					UpdatedDistance is TotalDistance + Distance,
-					Diff is ET - ST,
-					UpdatedTime is Time + Diff,
+					Time is ET - ST,
+					UpdatedTime is TotalTime + Time,
 					dfs_OptimalCost(DP, UpdatedPath, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
 				)
 			)
@@ -92,7 +93,7 @@ dfs_OptimalCost(X, Path, Y, TotalDistance, TotalCost, Time) :-
 
 % Depth First Search function for finding the path with the minimum distance.
 
-dfs_OptimalDistance(X, Path, Y, TotalDistance, Cost, Time) :-
+dfs_OptimalDistance(X, Path, Y, TotalDistance, TotalCost, TotalTime) :-
 	(	
 		% If the current node is not visited in path considered.
 		not(member(X, Path)) ->
@@ -107,8 +108,8 @@ dfs_OptimalDistance(X, Path, Y, TotalDistance, Cost, Time) :-
 				        % If current path has the minimum distance value (till now), update minimum path list
 				        (UpdatedOptimalDistance =:= TotalDistance) -> 
 				        	nb_setval(optimalPath, UpdatedPath),
-				        	nb_setval(optimalCost, Cost),
-				        	nb_setval(optimalTime, Time) 
+				        	nb_setval(optimalCost, TotalCost),
+				        	nb_setval(optimalTime, TotalTime) 
 				        ; 
 				        write("")
 				    )
@@ -116,12 +117,12 @@ dfs_OptimalDistance(X, Path, Y, TotalDistance, Cost, Time) :-
 					write("")
 			),
 			forall(
-				bus(_, X, DP, ST, ET, Distance, C),
+				bus(_, X, DP, ST, ET, Distance, Cost),
 				(	
 					UpdatedDistance is TotalDistance + Distance,
-					UpdatedCost is Cost + C,
-					Diff is ET - ST,
-					UpdatedTime is Time + Diff,
+					UpdatedCost is TotalCost + Cost,
+					Time is ET - ST,
+					UpdatedTime is TotalTime + Time,
 					dfs_OptimalDistance(DP, UpdatedPath, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
 				)
 			)
@@ -138,6 +139,7 @@ dfs_OptimalDistance(X, Path, Y, TotalDistance, Cost, Time) :-
 
 route(X, Y) :-
 	(
+		writeln("---------------------------------------------------"),
 		nb_setval(optimalDistance, 1000000),
     	nb_setval(optimalCost, 1000000),
     	nb_setval(optimalTime, 1000000),
@@ -153,14 +155,14 @@ route(X, Y) :-
 		nb_getval(optimalTime, OptimalTime1),
 
 		not(OptimalDistance1=1000000),
-		atomic_list_concat(OptimalPath1, ' -> ', Atom),
-		atom_string(Atom, String),
+		atomic_list_concat(OptimalPath1, ' -> ', Atom1),
+		atom_string(Atom1, String1),
 		writeln("Optimal Distance Path :"),
-	    writeln(String),
+	    writeln(String1),
 	    write("Minimum Distance To Travel : "), write(OptimalDistance1), writeln(" km"),
 	    write("Cost : "),write("Rs "), writeln(OptimalCost1),
 	    write("Travel Time : "), write(OptimalTime1), writeln(" hrs"),
-	    writeln(""),
+	    writeln("---------------------------------------------------"),
 
 	    nb_setval(optimalPath, []),
 	    nb_setval(optimalTime, 1000000),
@@ -175,14 +177,14 @@ route(X, Y) :-
 	    nb_getval(optimalDistance, OptimalDistance2),
 
 	    not(OptimalCost2=1000000),
-	    atomic_list_concat(OptimalPath2, ' -> ', Atom),
-		atom_string(Atom, String),
+	    atomic_list_concat(OptimalPath2, ' -> ', Atom2),
+		atom_string(Atom2, String2),
 		writeln("Optimal Cost Path :"),
-	    writeln(String),
+	    writeln(String2),
 	    write("Minimum Cost To Travel : "), write("Rs "), writeln(OptimalCost2),
 	    write("Distance Travelled : "), write(OptimalDistance2), writeln(" km"),
 	    write("Travel Time : "), write(OptimalTime2),  writeln(" hrs"),
-	    writeln(""),
+	    writeln("---------------------------------------------------"),
 
 	    nb_setval(optimalPath, []),
 	    nb_setval(optimalTime, 1000000),
@@ -197,13 +199,13 @@ route(X, Y) :-
 	    nb_getval(optimalDistance, OptimalDistance3),
 
 	    not(OptimalTime3=1000000),
-	    atomic_list_concat(OptimalPath3, ' -> ', Atom),
-		atom_string(Atom, String),
+	    atomic_list_concat(OptimalPath3, ' -> ', Atom3),
+		atom_string(Atom3, String3),
 		writeln("Optimal Travel Time Path :"),
-	    writeln(String),
+	    writeln(String3),
 	    write("Minimum Time To Travel : "), write(OptimalTime3), writeln(" hrs"),
 	    write("Distance Travelled : "), write(OptimalDistance3), writeln(" km"),
-	    write("Cost : "), write("Rs "), writeln(OptimalTime3),
-	    writeln("")
+	    write("Cost : "), write("Rs "), writeln(OptimalCost3),
+	    writeln("---------------------------------------------------")
 
 	).
