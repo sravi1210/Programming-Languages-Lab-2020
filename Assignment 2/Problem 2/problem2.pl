@@ -2,14 +2,12 @@
 :- style_check(-singleton).
 
 % Bus Information :- The format is bus(Number, Origin, Destination Place, Departure Time, Arrival Time, Distance, Cost).
-
 bus(123,amingaon,jalukbari,14.5,15,10,10).
 bus(13,jalukbari,paltanbazar,16,18,10,10).
 bus(10,amingaon,paltanbazar,15,15.5,30,100).
 bus(756,panbazar,chandmari,16,16.5,7,8).
 
 % Depth First Search function for finding the path with the minimum travel time.
-
 dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 	(	
 		% If the current node is not visited in path considered.
@@ -53,7 +51,6 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 
 
 % Depth First Search function for finding the path with the minimum cost.
-
 dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 	(	
 		% If the current node is not visited in path considered.
@@ -96,7 +93,6 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 	).
 
 % Depth First Search function for finding the path with the minimum distance.
-
 dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 	(	
 		% If the current node is not visited in path considered.
@@ -154,7 +150,6 @@ printData([Place | NextPlace], [Bus | NextBus]) :-
 	).
 
 % Function route(X, Y) to find optimal route between X and Y in terms of cost, time and distance.
-
 route(X, Y) :-
 	(
 		% All Global variables used in the code.
