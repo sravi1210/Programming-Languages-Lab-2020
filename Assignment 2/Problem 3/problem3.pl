@@ -49,6 +49,26 @@ edge(g14,g17,5).
 edge(g14,g18,4).
 edge(g17,g18,8).
 
+% Checks that last gate on path is the exit gate (g17).
+consecutive_edges([g17]).
+
+
+% Checks if two consecutive gates of a given path are part of an edge
+consecutive_edges([Gate, NextGate|Tail]) :-
+    (
+        (edge(Gate, NextGate, _) ; edge(NextGate, Gate, _)),
+        % Check remaining path recursively
+        consecutive_edges([NextGate|Tail])
+    ).
+
+% Checks if given path is valid
+valid([Gate|Tail]) :-
+    (
+        % Checks that given path starts with one of g1, g, g3, g4 (start gates).
+        start(Gate),
+        consecutive_edges([Gate|Tail])
+    ).
+
 % Function to calculate minimum distance when path reaches end gate g17.
 dfs_OptimalDistance(g17, Path, TotalDistance) :- 
     (
@@ -86,18 +106,19 @@ dfs_OptimalDistance(Gate, Path, TotalDistance) :-
     ).
 
 % If Depth First Search reaches exit gate g17 during process of finding all paths.
-dfs_Basic(g17, Path, _) :- 
-    % Add last gate to current path.
-    append(Path, [g17], UpdatedPath), 
-    % Convert path list to concatenated string
-    % atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
-    % Write string to terminal and file output.txt
-    % format('~w~n', String),
-    % open('output.txt', append, Stream),
-    % write(Stream, String),
-    % nl(Stream),
-    % close(Stream)
-    printData(UpdatedPath).
+dfs_Basic(g17, Path, _) :-
+    ( 
+        % Add last gate to current path.
+        append(Path, [g17], UpdatedPath), 
+        % Convert path list to concatenated string
+        atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
+        % Write string to terminal and file output.txt
+        format('~w~n', String),
+        open('output.txt', append, Stream),
+        write(Stream, String),
+        nl(Stream),
+        close(Stream)
+    ).
 
 % Basic Depth First Search to find all possible paths.
 dfs_Basic(Gate, Path, TotalDistance) :-
@@ -144,34 +165,13 @@ optimal() :-
         format('Optimal Path :- ~w~n', String)
     ).
 
-
-% Checks that last gate on path is the exit gate (g17).
-consecutive_edges([g17]).
-
-
-% Checks if two consecutive gates of a given path are part of an edge
-consecutive_edges([Gate, NextGate|Tail]) :-
-    (
-        (edge(Gate, NextGate, _) ; edge(NextGate, Gate, _)),
-        % Check remaining path recursively
-        consecutive_edges([NextGate|Tail])
-    ).
-
-% Checks if given path is valid
-valid([Gate|Tail]) :-
-    (
-        % Checks that given path starts with one of g1, g, g3, g4 (start gates).
-        start(Gate),
-        consecutive_edges([Gate|Tail])
-    ).
-
-% Function to print list of places and bus Id taken, for base case.
+% Function to print list of gates taken in the path.
 printData([Gate]) :-
     (
         writeln(Gate)
     ).
 
-% Function to print list of places and bus Id taken.
+% Function to print list of gates taken in the path.
 printData([Gate | NextGate]) :-
     (
         write(Gate), write(" -> "),
