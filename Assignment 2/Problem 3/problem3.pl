@@ -1,13 +1,13 @@
 % Style check to remove unnecessory warnings.
 :- style_check(-singleton).
 
-% Starting gates information in the format start(gx).
+% Starting doors information in the format start(gx).
 start(g1).
 start(g2).
 start(g3).
 start(g4).
 
-% Path information between different gates in the jail.
+% Path information between different doors in the jail.
 edge(g1,g5,4). 
 edge(g2,g5,6).
 edge(g3,g5,8). 
@@ -49,30 +49,45 @@ edge(g14,g17,5).
 edge(g14,g18,4).
 edge(g17,g18,8).
 
-% Checks that last gate on path is the exit gate (g17).
-consecutive_edges([g17]).
-
+% Checks that last door on path is the exit door (g17).
+consecutive_edges([g17]) :-
+	(
+		write("")
+	).
 
 % Checks if two consecutive gates of a given path are part of an edge
-consecutive_edges([Gate, NextGate|Tail]) :-
+consecutive_edges([Door, NextDoor|Tail]) :-
     (
-        (edge(Gate, NextGate, _) ; edge(NextGate, Gate, _)),
+        (edge(Door, NextDoor, _) ; edge(NextDoor, Door, _)),
         % Check remaining path recursively
-        consecutive_edges([NextGate|Tail])
+        consecutive_edges([NextDoor|Tail])
     ).
 
 % Checks if given path is valid
-valid([Gate|Tail]) :-
+valid([Door|Tail]) :-
     (
         % Checks that given path starts with one of g1, g, g3, g4 (start gates).
-        start(Gate),
-        consecutive_edges([Gate|Tail])
+        start(Door),
+        consecutive_edges([Door|Tail])
     ).
 
-% Function to calculate minimum distance when path reaches end gate g17.
+% Function to print list of gates taken in the path.
+printData([Door]) :-
+    (
+        writeln(Door)
+    ).
+
+% Function to print list of gates taken in the path.
+printData([Door | NextDoor]) :-
+    (
+        write(Door), write(" -> "),
+        printData(NextDoor)
+    ).
+
+% Function to calculate minimum distance when path reaches end door g17.
 dfs_OptimalDistance(g17, Path, TotalDistance) :- 
     (
-        % Add gate to current path
+        % Add door to current path
         append(Path, [g17], UpdatedPath), 
         % Update minimum path distance value in case it is minimum.
         nb_getval(optimalDistance, OptimalDistance),
@@ -86,29 +101,29 @@ dfs_OptimalDistance(g17, Path, TotalDistance) :-
         )
     ).
 
-% Function to recursively calculate minimum distance by doinf Depth First Search.
-dfs_OptimalDistance(Gate, Path, TotalDistance) :-
+% Function to recursively calculate minimum distance by doing Depth First Search.
+dfs_OptimalDistance(Door, Path, TotalDistance) :-
     (
-        not(member(Gate, Path)) -> 
-            % Add gate to current path
-            append(Path, [Gate], UpdatedPath),
-            % For all possible neighbours of the gate, apply Depth First Search recursively
+        not(member(Door, Path)) -> 
+            % Add door to current path
+            append(Path, [Door], UpdatedPath),
+            % For all possible neighbours of the door, apply Depth First Search recursively
             forall(
-                edge(Gate, NextGate, Distance), 
+                edge(Door, NextDoor, Distance), 
                 (
                     % Update total distance at each step
                     UpdatedDistance is TotalDistance + Distance, 
-                    dfs_OptimalDistance(NextGate, UpdatedPath, UpdatedDistance)
+                    dfs_OptimalDistance(NextDoor, UpdatedPath, UpdatedDistance)
                 )
             )
         ;
             write("")
     ).
 
-% If Depth First Search reaches exit gate g17 during process of finding all paths.
-dfs_Basic(g17, Path, _) :-
+% If Depth First Search reaches exit door g17 during process of finding all paths.
+dfs_Basic(g17, Path) :-
     ( 
-        % Add last gate to current path.
+        % Add last door to current path.
         append(Path, [g17], UpdatedPath), 
         % Convert path list to concatenated string
         atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
@@ -121,20 +136,18 @@ dfs_Basic(g17, Path, _) :-
     ).
 
 % Basic Depth First Search to find all possible paths.
-dfs_Basic(Gate, Path, TotalDistance) :-
+dfs_Basic(Door, Path) :-
     (
-        % If gate has not been visited yet.
-        % Note that if gate had been already visited, exploring it would create a cycle and infinite paths would be possible.
-        not(member(Gate, Path)) -> 
-            % Add gate to current path
-            append(Path, [Gate], UpdatedPath),
-            % For all possible neighbours of the gate, apply Depth First Search recursively
+        % If door has not been visited yet.
+        % Note that if door had been already visited, exploring it would create a cycle and infinite paths would be possible.
+        not(member(Door, Path)) -> 
+            % Add door to current path
+            append(Path, [Door], UpdatedPath),
+            % For all possible neighbours of the door, apply Depth First Search recursively
             forall(
-                edge(Gate, NextGate, Distance); edge(NextGate, Gate, Distance), 
+                edge(Door, NextDoor, _); edge(NextDoor, Door, _), 
                 (
-                    % Update total distance at each step
-                    UpdatedDistance is TotalDistance + Distance, 
-                    dfs_Basic(NextGate, UpdatedPath, UpdatedDistance)
+                    dfs_Basic(NextDoor, UpdatedPath)
                 )
             )
         ;
@@ -144,7 +157,7 @@ dfs_Basic(Gate, Path, TotalDistance) :-
 % Prints all possible paths using which the prisoner can escape the jail.
 paths() :-
     (
-        forall(start(X), dfs_Basic(X, [], 0))
+        forall(start(X), dfs_Basic(X, []))
     ).
 
 % Prints the optimal path (least distance) using which the prisoner can escape the jail.
@@ -155,7 +168,7 @@ optimal() :-
         nb_setval(optimalPath, []),
 
         % Apply DFS from all start gates
-        forall(start(Gate), dfs_OptimalDistance(Gate, [], 0)),
+        forall(start(Door), dfs_OptimalDistance(Door, [], 0)),
 
         % Get and output the optimal distance and path values.
         nb_getval(optimalDistance, OptimalDistance),
@@ -165,15 +178,3 @@ optimal() :-
         format('Optimal Path :- ~w~n', String)
     ).
 
-% Function to print list of gates taken in the path.
-printData([Gate]) :-
-    (
-        writeln(Gate)
-    ).
-
-% Function to print list of gates taken in the path.
-printData([Gate | NextGate]) :-
-    (
-        write(Gate), write(" -> "),
-        printData(NextGate)
-    ).
