@@ -72,17 +72,31 @@ valid([Door|Tail]) :-
     ).
 
 % Function to print list of gates taken in the path.
-printData([Door]) :-
+printData([Door], 1) :-
     (
         writeln(Door)
     ).
 
 % Function to print list of gates taken in the path.
-printData([Door | NextDoor]) :-
+printData([Door | NextDoor], Distance) :-
     (
         write(Door), write(" -> "),
-        printData(NextDoor)
+        UpdatedDistance is Distance - 1,
+        printData(NextDoor, UpdatedDistance)
     ).
+
+% Function to print list into file and terminal
+printFile(Path) :-
+	(
+		% Convert path list to concatenated string
+        atomic_list_concat(Path, ' -> ', Atom),
+        atom_string(Atom, Data),
+        % Write string to terminal and file output.txt
+        open('output.txt', append, Stream),
+        write(Stream, Data),
+        nl(Stream),
+        close(Stream)
+	).
 
 % Function to calculate minimum distance when path reaches end door g17.
 dfs_OptimalDistance(g17, Path, TotalDistance) :- 
@@ -121,22 +135,32 @@ dfs_OptimalDistance(Door, Path, TotalDistance) :-
     ).
 
 % If Depth First Search reaches exit door g17 during process of finding all paths.
-dfs_Basic(g17, Path) :-
+dfs_Basic(g17, Path, Distance) :-
     ( 
         % Add last door to current path.
-        append(Path, [g17], UpdatedPath), 
-        % Convert path list to concatenated string
-        atomic_list_concat(UpdatedPath, ' -> ', Atom), atom_string(Atom, String),
-        % Write string to terminal and file output.txt
-        format('~w~n', String),
-        open('output.txt', append, Stream),
-        write(Stream, String),
-        nl(Stream),
-        close(Stream)
+        append(Path, [g17], UpdatedPath),
+        UpdatedDistance is Distance + 1,
+        nb_getval(count, Count),
+        (
+        	(Count < 11) ->
+        		printData(UpdatedPath, UpdatedDistance)
+        	;
+        	(Count =:= 11) ->
+        		writeln("Please Wait! .........")
+        	;
+        	(Count =:= 57279) ->
+        		writeln("Success! ............."), 
+        		writeln("Total 57280 Paths Found! Check output.txt For More")
+        	;
+        		write("")
+        ),
+        UpdatedCount is Count + 1,
+        nb_setval(count, UpdatedCount),
+        printFile(UpdatedPath)
     ).
 
 % Basic Depth First Search to find all possible paths.
-dfs_Basic(Door, Path) :-
+dfs_Basic(Door, Path, Distance) :-
     (
         % If door has not been visited yet.
         % Note that if door had been already visited, exploring it would create a cycle and infinite paths would be possible.
@@ -147,7 +171,8 @@ dfs_Basic(Door, Path) :-
             forall(
                 edge(Door, NextDoor, _); edge(NextDoor, Door, _), 
                 (
-                    dfs_Basic(NextDoor, UpdatedPath)
+                	UpdatedDistance is Distance + 1,
+                    dfs_Basic(NextDoor, UpdatedPath, UpdatedDistance)
                 )
             )
         ;
@@ -157,7 +182,12 @@ dfs_Basic(Door, Path) :-
 % Prints all possible paths using which the prisoner can escape the jail.
 paths() :-
     (
-        forall(start(X), dfs_Basic(X, []))
+    	nb_setval(count, 0),
+    	open('output.txt', write, Stream),
+        write(Stream, "All 57280 Paths Are Listed Below:"),
+        nl(Stream),
+        close(Stream),
+        forall(start(X), dfs_Basic(X, [], 0))
     ).
 
 % Prints the optimal path (least distance) using which the prisoner can escape the jail.
