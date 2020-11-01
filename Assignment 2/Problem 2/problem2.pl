@@ -3,12 +3,55 @@
 
 % Bus Information :- The format is bus(Number, Origin, Destination Place, Departure Time, Arrival Time, Distance, Cost).
 bus(123,amingaon,jalukbari,14.5,15,10,10).
-bus(13,jalukbari,paltanbazar,16,18,10,10).
-bus(10,amingaon,paltanbazar,15,15.5,30,100).
+bus(13,jalukbari,paltanbazar,13,18,10,10).
+bus(10,amingaon,paltanbazar,15,15.5,30,1).
 bus(756,panbazar,chandmari,16,16.5,7,8).
 
+% Function to calculate the travel time betweeen the buses.
+find_TotalTime([X, Y|Z], 0, Count) :-
+	(
+		nb_getval(totalTime, TotalTime),
+		TempTime is TotalTime + Y,
+		UpdatedTime is TempTime - X,
+		nb_setval(totalTime, UpdatedTime),
+		UpdatedCount is Count - 1,
+		find_TotalTime([Y|Z], 1, UpdatedCount)
+	).
+
+find_TotalTime(X, 0, 1) :-
+	(
+		write("")
+	).
+
+% Function to calculate the travel time betweeen the buses.
+find_TotalTime([X, Y|Z], 1, Count) :-
+	(
+		nb_getval(totalTime, TotalTime),
+		(
+			(Y > X) ->
+				TempTime is TotalTime + Y,
+				UpdatedTime is TempTime - X,
+				nb_setval(totalTime, UpdatedTime)
+			;
+			(Y < X) ->
+				TempTime1 is TotalTime + Y,
+				TempTime2 is TempTime1 + 24,
+				UpdatedTime is TempTime2 - X,
+				nb_setval(totalTime, UpdatedTime)
+			;
+				write("")
+		),
+		UpdatedCount is Count - 1,
+		find_TotalTime([Y|Z], 0, UpdatedCount)
+	).
+
+find_TotalTime(X, 1, 1) :-
+	(
+		write("")
+	).
+
 % Depth First Search function for finding the path with the minimum travel time.
-dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
+dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime, Count) :-
 	(	
 		% If the current node is not visited in path considered.
 		not(member(X, Path)) ->
@@ -18,11 +61,14 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				(X == Y) ->
 					% If the destination is same as source node, then a path is reached thus store the results.
 					nb_getval(optimalTime, OptimalTime),
-    				UpdatedOptimalTime is min(OptimalTime, TotalTime),
+					nb_setval(totalTime, 0),
+					find_TotalTime(TotalTime, 0, Count),
+					nb_getval(totalTime, OverallTime),
+    				UpdatedOptimalTime is min(OptimalTime, OverallTime),
 				    nb_setval(optimalTime, UpdatedOptimalTime),
 				    (
 				        % If current path has the minimum time value (till now), update minimum path list
-				        (UpdatedOptimalTime =:= TotalTime) -> 
+				        (UpdatedOptimalTime =:= OverallTime) -> 
 				        	nb_setval(optimalPath, UpdatedPath),
 				        	nb_setval(optimalBus, Bus),
 				        	nb_setval(optimalDistance, TotalDistance),
@@ -39,10 +85,11 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				(	
 					UpdatedCost is TotalCost + Cost,
 					UpdatedDistance is TotalDistance + Distance,
-					Time is ET - ST,
-					UpdatedTime is TotalTime + Time,
+					append(TotalTime, [ST], TempTime),
+					append(TempTime, [ET], UpdatedTime),
+					UpdatedCount is Count + 2,
 					append(Bus, [ID], UpdatedBus),
-					dfs_OptimalTime(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
+					dfs_OptimalTime(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime, UpdatedCount)
 				)
 			)
 		;
@@ -51,7 +98,7 @@ dfs_OptimalTime(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 
 
 % Depth First Search function for finding the path with the minimum cost.
-dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
+dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime, Count) :-
 	(	
 		% If the current node is not visited in path considered.
 		not(member(X, Path)) ->
@@ -69,7 +116,11 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				        	nb_setval(optimalPath, UpdatedPath),
 				        	nb_setval(optimalDistance, TotalDistance),
 				        	nb_setval(optimalBus, Bus),
-				        	nb_setval(optimalTime, TotalTime) 
+				        	nb_setval(totalTime, 0),
+				        	find_TotalTime(TotalTime, 0, Count),
+				        	nb_getval(totalTime, TempTime),
+				        	nb_setval(optimalTime, TempTime)
+
 				        ; 
 				        write("")
 				    )
@@ -82,10 +133,11 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				(	
 					UpdatedCost is TotalCost + Cost,
 					UpdatedDistance is TotalDistance + Distance,
-					Time is ET - ST,
-					UpdatedTime is TotalTime + Time,
+					append(TotalTime, [ST], TempTime),
+					append(TempTime, [ET], UpdatedTime),
 					append(Bus, [ID], UpdatedBus),
-					dfs_OptimalCost(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
+					UpdatedCount is Count + 2,
+					dfs_OptimalCost(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime, UpdatedCount)
 				)
 			)
 		;
@@ -93,7 +145,7 @@ dfs_OptimalCost(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 	).
 
 % Depth First Search function for finding the path with the minimum distance.
-dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
+dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime, Count) :-
 	(	
 		% If the current node is not visited in path considered.
 		not(member(X, Path)) ->
@@ -110,8 +162,11 @@ dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				        (UpdatedOptimalDistance =:= TotalDistance) -> 
 				        	nb_setval(optimalPath, UpdatedPath),
 				        	nb_setval(optimalBus, Bus),
+				        	nb_setval(totalTime, 0),
+				        	find_TotalTime(TotalTime, 0, Count),
+				        	nb_getval(totalTime, TempTime),
 				        	nb_setval(optimalCost, TotalCost),
-				        	nb_setval(optimalTime, TotalTime) 
+				        	nb_setval(optimalTime, TempTime) 
 				        ; 
 				        write("")
 				    )
@@ -124,10 +179,11 @@ dfs_OptimalDistance(X, Path, Bus, Y, TotalDistance, TotalCost, TotalTime) :-
 				(	
 					UpdatedDistance is TotalDistance + Distance,
 					UpdatedCost is TotalCost + Cost,
-					Time is ET - ST,
-					UpdatedTime is TotalTime + Time,
+					append(TotalTime, [ST], TempTime),
+					append(TempTime, [ET], UpdatedTime),
 					append(Bus, [ID], UpdatedBus),
-					dfs_OptimalDistance(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime)
+					UpdatedCount is Count + 2,
+					dfs_OptimalDistance(DP, UpdatedPath, UpdatedBus, Y, UpdatedDistance, UpdatedCost, UpdatedTime, UpdatedCount)
 				)
 			)
 		;
@@ -159,22 +215,28 @@ route(X, Y) :-
     	nb_setval(optimalTime, 1000000),
     	nb_setval(optimalPath, []),
     	nb_setval(optimalBus, []),
+    	nb_setval(totalTime, 0),
 
 		% To calculate minimum distance between X and Y by simple Depth First Search.
-		dfs_OptimalDistance(X, [], [], Y, 0, 0, 0), 
+		dfs_OptimalDistance(X, [], [], Y, 0, 0, [], 0), 
 
 		nb_getval(optimalDistance, OptimalDistance1),
 		nb_getval(optimalPath, OptimalPath1),
 		nb_getval(optimalBus, OptimalBus1),
 		nb_getval(optimalCost, OptimalCost1),
 		nb_getval(optimalTime, OptimalTime1),
-
+		(
+			(OptimalDistance1 =:= 1000000) ->
+				writeln("No Paths Exists")
+			;
+				write("")
+		),
 		not(OptimalDistance1=1000000),
 		writeln("Optimal Distance Path :"),
 	    printData(OptimalPath1, OptimalBus1),
 	    write("Minimum Distance To Travel : "), write(OptimalDistance1), writeln(" km"),
 	    write("Cost : "),write("Rs "), writeln(OptimalCost1),
-	    write("Travel Time : "), write(OptimalTime1), writeln(" hrs"),
+	    write("Travel Time (Including delay between Buses) : "), write(OptimalTime1), writeln(" hrs"),
 	    writeln("---------------------------------------------------"),
 
 	    nb_setval(optimalPath, []),
@@ -184,7 +246,7 @@ route(X, Y) :-
 	    nb_setval(optimalDistance, 1000000),
 
 	    % To calculate minimum cost between X and Y by simple Depth First Search.
-	    dfs_OptimalCost(X, [], [], Y, 0, 0, 0),
+	    dfs_OptimalCost(X, [], [], Y, 0, 0, [], 0),
 
 	    nb_getval(optimalCost, OptimalCost2),
 	    nb_getval(optimalPath, OptimalPath2),
@@ -197,7 +259,7 @@ route(X, Y) :-
 	    printData(OptimalPath2, OptimalBus2),
 	    write("Minimum Cost To Travel : "), write("Rs "), writeln(OptimalCost2),
 	    write("Distance Travelled : "), write(OptimalDistance2), writeln(" km"),
-	    write("Travel Time : "), write(OptimalTime2),  writeln(" hrs"),
+	    write("Travel Time (Including delay between Buses) : "), write(OptimalTime2),  writeln(" hrs"),
 	    writeln("---------------------------------------------------"),
 
 	    nb_setval(optimalPath, []),
@@ -207,7 +269,7 @@ route(X, Y) :-
 	    nb_setval(optimalDistance, 1000000),
 
 	    % To calculate minimum travel time between X and Y by simple Depth First Search.
-	    dfs_OptimalTime(X, [], [], Y, 0, 0, 0),
+	    dfs_OptimalTime(X, [], [], Y, 0, 0, [], 0),
 
 	    nb_getval(optimalCost, OptimalCost3),
 	    nb_getval(optimalPath, OptimalPath3),
@@ -218,7 +280,7 @@ route(X, Y) :-
 	    not(OptimalTime3=1000000),
 		writeln("Optimal Travel Time Path :"),
 	    printData(OptimalPath3, OptimalBus3),
-	    write("Minimum Time To Travel : "), write(OptimalTime3), writeln(" hrs"),
+	    write("Minimum Time To Travel (Including delay between Buses) : "), write(OptimalTime3), writeln(" hrs"),
 	    write("Distance Travelled : "), write(OptimalDistance3), writeln(" km"),
 	    write("Cost : "), write("Rs "), writeln(OptimalCost3),
 	    writeln("---------------------------------------------------")
