@@ -1,0 +1,4 @@
+# Haskell link files
+*.o
+*.hi
+a.out
