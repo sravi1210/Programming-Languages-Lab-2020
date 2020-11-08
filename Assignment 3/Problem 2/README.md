@@ -1,5 +1,5 @@
 # To Compile The Program Use:
-	$ ghc -o a.out problem1.hs
+	$ ghc -o a.out problem2.hs
 
 # To Run The Program Use:
 	?- ./a.out
@@ -8,5 +8,5 @@
 
 # Use Interface Haskell With
 	$ ghci
-	Prelude> :load "problem1.hs"
+	Prelude> :load "problem2.hs"
 	*Main> function_name parameters  
