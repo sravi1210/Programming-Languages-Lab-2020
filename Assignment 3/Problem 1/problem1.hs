@@ -103,14 +103,19 @@ findAdd (a:sa) (b:sb) = do
     let temp1 = findAdd sa (b:sb)
     let add1 = (a+b : temp1)
     let temp2 = findAdd (a:sa) sb
-    removeDuplicates (add1 ++ temp2)
+    add1 ++ temp2
+
+-- Function to handle remove duplicates in the addition of the two sets.
+findAdd' sa sb = do
+    let set_add = findAdd sa sb
+    removeDuplicates set_add
 
 -- Function to handle addition of sets and user input.
 setAdd :: Char -> Char -> IO ()
 setAdd x y | (x /= 'A' && x /= 'B') || (y /= 'B' && y /= 'A') = putStrLn "ONLY A OR B ARE SUPPORTED"
-           | x == 'A' && y == 'A' = print (findAdd setA setA)
-           | x == 'B' && y == 'B' = print (findAdd setB setB)
-           | x /= y = print (findAdd setA setB)
+           | x == 'A' && y == 'A' = print (findAdd' setA setA)
+           | x == 'B' && y == 'B' = print (findAdd' setB setB)
+           | x /= y = print (findAdd' setA setB)
 
 
 

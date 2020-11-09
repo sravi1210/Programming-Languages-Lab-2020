@@ -6,7 +6,7 @@
 
 ## OR
 
-# Use Interface Haskell With
+# Use Interface Haskell
 	$ ghci
 	Prelude> :load "problem2.hs"
-	*Main> function_name parameters  
+	*Main> function_name parameters 

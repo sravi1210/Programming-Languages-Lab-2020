@@ -6,7 +6,15 @@
 
 ## OR
 
-# Use Interface Haskell With
+# Use Interface Haskell.
 	$ ghci
 	Prelude> :load "problem1.hs"
 	*Main> function_name parameters  
+
+# To Access Different Function Formats In Haskell
+	*Main> setUnion 'A' 'B'
+	*Main> setIntersect 'A' 'B'
+	*Main> setDifference 'A' 'B'
+	*Main> isEmpty 'A'
+	*Main> setAdd 'A' 'B'
+	*Main> main
