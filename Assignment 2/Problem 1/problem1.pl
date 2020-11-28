@@ -1,15 +1,39 @@
 % DataBase Information :- For new data term copy paste here and run the code.
-parent(jatin,avantika).
-parent(jolly,jatin).
-parent(jolly,kattappa).
-parent(manisha,avantika).
-parent(manisha,shivkami).
-parent(bahubali,shivkami).
-male(kattappa).
-male(jolly).
-male(bahubali).
-female(shivkami).
-female(avantika).
+parent(ram,bha).
+parent(ram,bir).
+parent(ram,sat).
+parent(bha,nar).
+parent(bha,par).
+parent(sat,st).
+parent(pre,st).
+parent(sat,ju).
+parent(sat,ch).
+parent(rsh,ju).
+parent(pre,ch).
+parent(bir,bhu).
+parent(bir,jy).
+parent(sum,jy).
+parent(sum,bhu).
+parent(rsh,nar).
+parent(rsh,par).
+parent(x,pre).
+parent(hz,sum).
+male(ram).
+male(bha).
+male(bir).
+male(sat).
+male(nar).
+male(par).
+male(x).
+male(bhu).
+male(st).
+female(ju).
+female(ch).
+female(jy).
+female(sum).
+female(pre).
+female(rsh).
+female(shti).
 
 % Uncle :- Is defined as the brother of one's father or mother.
 % uncle(X, Y) :- means X is the uncle of Y.
@@ -19,6 +43,7 @@ uncle(X, Y) :-
 		male(X),
 		parent(P, X),
 		parent(Z, Y),
+		not(Z=X),
 		parent(P, Z)
 	).
 
